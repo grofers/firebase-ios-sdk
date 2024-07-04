@@ -46,10 +46,6 @@ let package = Package(
       targets: ["FirebaseAnalyticsSwiftTarget"]
     ),
     .library(
-      name: "FirebaseAuth",
-      targets: ["FirebaseAuth"]
-    ),
-    .library(
       name: "FirebaseAppCheck",
       targets: ["FirebaseAppCheck"]
     ),
@@ -58,20 +54,8 @@ let package = Package(
       targets: ["FirebaseAppDistributionTarget"]
     ),
     .library(
-      name: "FirebaseAuthCombine-Community",
-      targets: ["FirebaseAuthCombineSwift"]
-    ),
-    .library(
       name: "FirebaseFirestoreCombine-Community",
       targets: ["FirebaseFirestoreCombineSwift"]
-    ),
-    .library(
-      name: "FirebaseFunctionsCombine-Community",
-      targets: ["FirebaseFunctionsCombineSwift"]
-    ),
-    .library(
-      name: "FirebaseStorageCombine-Community",
-      targets: ["FirebaseStorageCombineSwift"]
     ),
     .library(
       name: "FirebaseCrashlytics",
@@ -96,10 +80,6 @@ let package = Package(
     .library(
       name: "FirebaseFirestoreSwift",
       targets: ["FirebaseFirestoreSwiftTarget"]
-    ),
-    .library(
-      name: "FirebaseFunctions",
-      targets: ["FirebaseFunctions"]
     ),
     .library(
       name: "FirebaseInAppMessaging-Beta",
@@ -134,13 +114,9 @@ let package = Package(
       targets: ["FirebaseRemoteConfigSwift"]
     ),
     .library(
-      name: "FirebaseStorage",
-      targets: ["FirebaseStorage"]
-    ),
-    .library(
       name: "FirebaseVertexAI-Preview",
       targets: ["FirebaseVertexAI"]
-    ),
+    )
   ],
   dependencies: [
     .package(
@@ -159,10 +135,6 @@ let package = Package(
     .package(
       url: "https://github.com/google/GoogleUtilities.git",
       "7.12.1" ..< "8.0.0"
-    ),
-    .package(
-      url: "https://github.com/google/gtm-session-fetcher.git",
-      "2.1.0" ..< "4.0.0"
     ),
     .package(
       url: "https://github.com/firebase/nanopb.git",
@@ -187,11 +159,7 @@ let package = Package(
       url: "https://github.com/SlaunchaMan/GCDWebServer.git",
       revision: "935e2736044e71e5341663c3cc9a335ba6867a2b"
     ),
-    .package(
-      url: "https://github.com/google/interop-ios-for-google-sdks.git",
-      "100.0.0" ..< "101.0.0"
-    ),
-    .package(url: "https://github.com/google/app-check.git", "10.19.0" ..< "11.0.0"),
+    .package(url: "https://github.com/google/app-check.git", "10.18.0" ..< "11.0.0")
   ],
   targets: [
     .target(
@@ -432,28 +400,7 @@ let package = Package(
         .headerSearchPath("../../../.."),
       ]
     ),
-
-    .target(
-      name: "FirebaseAuth",
-      dependencies: [
-        "FirebaseAppCheckInterop",
-        "FirebaseCore",
-        .product(name: "GULAppDelegateSwizzler", package: "GoogleUtilities"),
-        .product(name: "GULEnvironment", package: "GoogleUtilities"),
-        .product(name: "GTMSessionFetcherCore", package: "gtm-session-fetcher"),
-        .product(name: "RecaptchaInterop", package: "interop-ios-for-google-sdks"),
-      ],
-      path: "FirebaseAuth/Sources",
-      resources: [.process("Resources/PrivacyInfo.xcprivacy")],
-      publicHeadersPath: "Public",
-      cSettings: [
-        .headerSearchPath("../../"),
-      ],
-      linkerSettings: [
-        .linkedFramework("Security"),
-        .linkedFramework("SafariServices", .when(platforms: [.iOS])),
-      ]
-    ),
+    
     // Internal headers only for consuming from Swift.
     .target(
       name: "FirebaseAuthInterop",
@@ -466,29 +413,6 @@ let package = Package(
         .headerSearchPath("../../"),
       ]
     ),
-    .testTarget(
-      name: "AuthUnit",
-      dependencies: [
-        "FirebaseAuth",
-        .product(name: "OCMock", package: "ocmock"),
-      ],
-      path: "FirebaseAuth/Tests/Unit",
-      exclude: [
-        "FIRAuthKeychainServicesTests.m", // TODO: figure out SPM keychain testing
-        "FIRAuthTests.m",
-        "FIRUserTests.m",
-        "SwiftAPI.swift", // Only builds via CocoaPods testing until Swift source update.
-        "SwiftGlobalTests.swift", // Only builds via CocoaPods testing until Swift source update.
-      ],
-      cSettings: [
-        .headerSearchPath("../../.."),
-      ]
-    ),
-    .target(
-      name: "FirebaseAuthCombineSwift",
-      dependencies: ["FirebaseAuth"],
-      path: "FirebaseCombineSwift/Sources/Auth"
-    ),
     .target(
       name: "FirebaseFirestoreCombineSwift",
       dependencies: [
@@ -496,13 +420,6 @@ let package = Package(
         "FirebaseFirestoreSwift",
       ],
       path: "FirebaseCombineSwift/Sources/Firestore"
-    ),
-    .target(
-      name: "FirebaseStorageCombineSwift",
-      dependencies: [
-        "FirebaseStorage",
-      ],
-      path: "FirebaseCombineSwift/Sources/Storage"
     ),
     .target(
       name: "FirebaseCrashlytics",
@@ -710,64 +627,6 @@ let package = Package(
         "FirebaseFirestoreTarget",
       ],
       path: "FirebaseFirestoreSwift/Sources"
-    ),
-
-    // MARK: - Firebase Functions
-
-    .target(
-      name: "FirebaseFunctions",
-      dependencies: [
-        "FirebaseAppCheckInterop",
-        "FirebaseAuthInterop",
-        "FirebaseCore",
-        "FirebaseCoreExtension",
-        "FirebaseMessagingInterop",
-        "FirebaseSharedSwift",
-        .product(name: "GTMSessionFetcherCore", package: "gtm-session-fetcher"),
-      ],
-      path: "FirebaseFunctions/Sources"
-    ),
-    .testTarget(
-      name: "FirebaseFunctionsUnit",
-      dependencies: ["FirebaseFunctions",
-                     "FirebaseAppCheckInterop",
-                     "FirebaseAuthInterop",
-                     "FirebaseMessagingInterop",
-                     "SharedTestUtilities"],
-      path: "FirebaseFunctions/Tests/Unit",
-      cSettings: [
-        .headerSearchPath("../../../"),
-      ]
-    ),
-    .testTarget(
-      name: "FirebaseFunctionsIntegration",
-      dependencies: ["FirebaseFunctions",
-                     "SharedTestUtilities"],
-      path: "FirebaseFunctions/Tests/Integration"
-    ),
-    .testTarget(
-      name: "FirebaseFunctionsObjCIntegration",
-      dependencies: ["FirebaseFunctions",
-                     "SharedTestUtilities"],
-      path: "FirebaseFunctions/Tests/ObjCIntegration",
-      // See https://forums.swift.org/t/importing-swift-libraries-from-objective-c/56730
-      exclude: [
-        "ObjCPPAPITests.mm",
-      ],
-      cSettings: [
-        .headerSearchPath("../../.."),
-      ]
-    ),
-    .target(
-      name: "FirebaseFunctionsCombineSwift",
-      dependencies: ["FirebaseFunctions"],
-      path: "FirebaseCombineSwift/Sources/Functions"
-    ),
-    .testTarget(
-      name: "FunctionsCombineUnit",
-      dependencies: ["FirebaseFunctionsCombineSwift",
-                     "SharedTestUtilities"],
-      path: "FirebaseFunctions/Tests/CombineUnit"
     ),
 
     // MARK: - Firebase In App Messaging
@@ -1161,126 +1020,6 @@ let package = Package(
       name: "FirebaseSessionsUnit",
       dependencies: ["FirebaseSessions"],
       path: "FirebaseSessions/Tests/Unit"
-    ),
-
-    // MARK: - Firebase Storage
-
-    .target(
-      name: "FirebaseStorage",
-      dependencies: [
-        "FirebaseAppCheckInterop",
-        "FirebaseAuthInterop",
-        "FirebaseCore",
-        "FirebaseCoreExtension",
-        .product(name: "GTMSessionFetcherCore", package: "gtm-session-fetcher"),
-        .product(name: "GULEnvironment", package: "GoogleUtilities"),
-      ],
-      path: "FirebaseStorage/Sources"
-    ),
-    .testTarget(
-      name: "FirebaseStorageUnit",
-      dependencies: ["FirebaseStorage",
-                     "SharedTestUtilities"],
-      path: "FirebaseStorage/Tests/Unit",
-      cSettings: [
-        .headerSearchPath("../../../"),
-      ]
-    ),
-    .testTarget(
-      name: "StorageObjCIntegration",
-      dependencies: ["FirebaseStorage"],
-      path: "FirebaseStorage/Tests/ObjCIntegration",
-      exclude: [
-        // See https://forums.swift.org/t/importing-swift-libraries-from-objective-c/56730
-        "FIRStorageIntegrationTests.m",
-        "ObjCPPAPITests.mm",
-        "Credentials.h",
-      ],
-      cSettings: [
-        .headerSearchPath("../../.."),
-      ]
-    ),
-    .testTarget(
-      name: "swift-test",
-      dependencies: [
-        "Firebase",
-        "FirebaseAuth",
-        "FirebaseAppCheck",
-        "FirebaseABTesting",
-        "FirebaseAnalytics",
-        "FirebaseAnalyticsSwift",
-        .target(name: "FirebaseAppDistribution",
-                condition: .when(platforms: [.iOS])),
-        "FirebaseAuthCombineSwift",
-        "FirebaseFirestoreCombineSwift",
-        "FirebaseFunctionsCombineSwift",
-        "FirebaseStorageCombineSwift",
-        "FirebaseCrashlytics",
-        "FirebaseCore",
-        "FirebaseDatabase",
-        "FirebaseDynamicLinks",
-        "FirebaseFirestoreTarget",
-        "FirebaseFirestoreSwift",
-        "FirebaseFunctions",
-        .target(name: "FirebaseInAppMessaging",
-                condition: .when(platforms: [.iOS, .tvOS])),
-        .target(name: "FirebaseInAppMessagingSwift",
-                condition: .when(platforms: [.iOS, .tvOS])),
-        "FirebaseInstallations",
-        "FirebaseMessaging",
-        .target(name: "FirebasePerformance",
-                condition: .when(platforms: [.iOS, .tvOS])),
-        "FirebaseRemoteConfig",
-        "FirebaseSessions",
-        "FirebaseStorage",
-        .product(name: "nanopb", package: "nanopb"),
-      ],
-      path: "SwiftPMTests/swift-test"
-    ),
-    .testTarget(
-      name: "analytics-import-test",
-      dependencies: [
-        "FirebaseAnalyticsSwiftTarget",
-        "FirebaseAnalyticsWrapper",
-        "Firebase",
-      ],
-      path: "SwiftPMTests/analytics-import-test"
-    ),
-    .testTarget(
-      name: "objc-import-test",
-      dependencies: [
-        "Firebase",
-        "FirebaseAuth",
-        "FirebaseABTesting",
-        "FirebaseAppCheck",
-        .target(name: "FirebaseAppDistribution",
-                condition: .when(platforms: [.iOS])),
-        "FirebaseCrashlytics",
-        "FirebaseCore",
-        "FirebaseDatabase",
-        "FirebaseDynamicLinks",
-        "FirebaseFirestoreTarget",
-        "FirebaseFunctions",
-        .target(name: "FirebaseInAppMessaging",
-                condition: .when(platforms: [.iOS, .tvOS])),
-        "FirebaseInstallations",
-        "FirebaseMessaging",
-        .target(name: "FirebasePerformance",
-                condition: .when(platforms: [.iOS, .tvOS])),
-        "FirebaseRemoteConfig",
-        "FirebaseStorage",
-      ],
-      path: "SwiftPMTests/objc-import-test"
-    ),
-    .testTarget(
-      name: "version-test",
-      dependencies: [
-        "FirebaseCore",
-      ],
-      path: "SwiftPMTests/version-test",
-      cSettings: [
-        .define("FIR_VERSION", to: firebaseVersion),
-      ]
     ),
 
     // MARK: - Firebase App Check
