@@ -25,19 +25,6 @@ let package = Package(
   platforms: [.iOS(.v15), .macCatalyst(.v15), .macOS(.v10_15), .tvOS(.v15), .watchOS(.v7)],
   products: [
     .library(
-      name: "FirebaseAI",
-      targets: [
-        "FirebaseAI",
-        "FirebaseAILogic",
-      ]
-    ),
-    .library(
-      name: "FirebaseAILogic",
-      targets: [
-        "FirebaseAILogic",
-      ]
-    ),
-    .library(
       name: "FirebaseAnalytics",
       targets: ["FirebaseAnalyticsTarget"]
     ),
@@ -150,44 +137,6 @@ let package = Package(
       name: "Firebase",
       path: "CoreOnly/Sources",
       publicHeadersPath: "./"
-    ),
-
-    // MARK: - Firebase AI
-
-    .target(
-      name: "FirebaseAILogic",
-      dependencies: [
-        "FirebaseAppCheckInterop",
-        "FirebaseAuthInterop",
-        "FirebaseCore",
-        "FirebaseCoreExtension",
-      ],
-      path: "FirebaseAI/Sources"
-    ),
-    .testTarget(
-      name: "FirebaseAILogicUnit",
-      dependencies: [
-        "FirebaseAILogic",
-        "FirebaseStorage",
-      ],
-      path: "FirebaseAI/Tests/Unit",
-      resources: [
-        .copy("vertexai-sdk-test-data/mock-responses"),
-        .process("Resources"),
-      ],
-      cSettings: [
-        .headerSearchPath("../../../"),
-      ]
-    ),
-    .target(
-      name: "FirebaseAI",
-      dependencies: ["FirebaseAILogic"],
-      path: "FirebaseAI/Wrapper/Sources"
-    ),
-    .testTarget(
-      name: "FirebaseAIUnit",
-      dependencies: ["FirebaseAI"],
-      path: "FirebaseAI/Wrapper/Tests"
     ),
 
     // MARK: - Firebase Core
