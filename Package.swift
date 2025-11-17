@@ -142,7 +142,8 @@ let package = Package(
       url: "https://github.com/SlaunchaMan/GCDWebServer.git",
       revision: "935e2736044e71e5341663c3cc9a335ba6867a2b"
     ),
-    .package(url: "https://github.com/google/app-check.git", "10.18.0" ..< "11.0.0")
+    .package(url: "https://github.com/google/app-check.git",
+             "11.0.1" ..< "12.0.0"),
   ],
   targets: [
     .target(
